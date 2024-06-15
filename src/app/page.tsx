@@ -1,29 +1,31 @@
-import { Button } from '@/components/ui/button';
-import React from 'react';
-import Grid from './_components/Grid';
+"use client"
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+import React from "react";
+import Grid from "./_components/Grid";
+import { Button } from "@/components/ui/button";
+
+const handleRestart = () => {
+  window.location.reload();
+}
+
+export default function Home() {
   return (
-    <html lang="en">
-      <body className="min-h-screen flex flex-col">
-        <header className="bg-white shadow-md py-4">
-          <div className="container mx-auto flex justify-between items-center">
+    <div lang="en">
+      <div className="flex min-h-screen flex-col">
+        <header className="bg-white">
+          <div className="container mx-auto flex items-center justify-between">
             <h1 className="text-2xl font-bold">Minesweeper</h1>
-            <Button className="btn" variant={'ghost'} >Restart</Button>
+            <Button onClick={handleRestart} className="btn" variant={"ghost"}>
+              Restart
+            </Button>
           </div>
         </header>
-        <main className="container mx-auto my-auto py-8">{children}
-        <div className="flex items-center justify-center mx-auto my-auto">
-          <Grid />
-        </div>
-        </main>
-        <footer className="bg-white shadow-md py-4">
-          <div className="container mx-auto flex justify-between items-center">
-            <span>Stopwatch</span>
-            <span>Flags: 0</span>
+        <div className="container mx-auto my-auto py-8">
+          <div className="mx-auto my-auto flex items-center justify-center">
+            <Grid />
           </div>
-        </footer>
-      </body>
-    </html>
+        </div>
+      </div>
+    </div>
   );
 }

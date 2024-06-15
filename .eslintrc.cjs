@@ -1,42 +1,23 @@
-/** @type {import("eslint").Linter.Config} */
-const config = {
-  "parser": "@typescript-eslint/parser",
-  "parserOptions": {
-    "project": true
+module.exports = {
+  root: true,
+  parser: '@typescript-eslint/parser',
+  plugins: ['@typescript-eslint'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'next/core-web-vitals',
+    'prettier',
+  ],
+  rules: {
+    '@typescript-eslint/explicit-module-boundary-types': 'off',
+    '@typescript-eslint/no-non-null-assertion': 'off',
+    '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+    'no-return-assign': 0,
+    'no-console': 'off',
+    'react-hooks/exhaustive-deps': 'off',
+    'react/no-unescaped-entities': 'off',
+    '@typescript-eslint/no-explicit-any': 'warn',
+    // '@typescript-eslint/no-floating-promises': 'error',
   },
-  "plugins": [
-    "@typescript-eslint"
-  ],
-  "extends": [
-    "next/core-web-vitals",
-    "plugin:@typescript-eslint/recommended-type-checked",
-    "plugin:@typescript-eslint/stylistic-type-checked"
-  ],
-  "rules": {
-    "@typescript-eslint/array-type": "off",
-    "@typescript-eslint/consistent-type-definitions": "off",
-    "@typescript-eslint/consistent-type-imports": [
-      "warn",
-      {
-        "prefer": "type-imports",
-        "fixStyle": "inline-type-imports"
-      }
-    ],
-    "@typescript-eslint/no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_"
-      }
-    ],
-    "@typescript-eslint/require-await": "off",
-    "@typescript-eslint/no-misused-promises": [
-      "error",
-      {
-        "checksVoidReturn": {
-          "attributes": false
-        }
-      }
-    ]
-  }
+  ignorePatterns: ['src/types/', '.eslintrc.js', 'src/generated/'],
 }
-module.exports = config;

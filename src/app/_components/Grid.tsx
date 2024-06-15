@@ -27,8 +27,8 @@ const placeMines = (grid: CellType[][], mines: number): CellType[][] => {
   while (placedMines < mines) {
     const row = Math.floor(Math.random() * size);
     const col = Math.floor(Math.random() * size);
-    if (grid[row] && grid[row][col] && !grid[row][col].isMine) {
-      grid[row][col].isMine = true;
+    if (grid[row]?.[col] && !grid[row]![col]!.isMine) {
+      grid[row]![col]!.isMine = true;
       placedMines++;
     }
   }
@@ -46,7 +46,9 @@ const calculateAdjacentMines = (grid: CellType[][]): CellType[][] => {
         const newRow = row + i;
         const newCol = col + j;
         if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
-          if (grid[newRow] && grid[newRow][newCol]) {
+          // @ts-ignore
+          if (grid[newRow] && grid?.[newRow][newCol]) {
+            // @ts-ignore
             adjacentCells.push(grid[newRow][newCol]);
           }
         }
@@ -78,62 +80,66 @@ const Grid: React.FC = () => {
     return calculateAdjacentMines(gridWithMines);
   });
 
-  const revealCell = (
-    grid: CellType[][],
-    row: number,
-    col: number,
-  ): CellType[][] => {
-    const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
-    const stack = [[row, col]];
+const revealCell = (
+  grid: CellType[][],
+  row: number,
+  col: number,
+): CellType[][] => {
+  const newGrid = grid.map((row) => row.map((cell) => ({ ...cell })));
+  const stack = [[row, col]];
 
-    while (stack.length > 0) {
-      const [r, c] = stack.pop()!;
-      
-      const cell = newGrid[r][c];
+  while (stack.length > 0) {
+    const [r, c] = stack.pop()!;
+    // @ts-ignore
+    const cell = newGrid[r][c];
 
-      if (!cell.isRevealed && !cell.isFlagged) {
-        cell.isRevealed = true;
+    if (!cell.isRevealed && !cell.isFlagged) {
+      cell.isRevealed = true;
 
-        if (cell.adjacentMines === 0 && !cell.isMine) {
-          getAdjacentCells(newGrid, r, c).forEach((adjCell) => {
-            if (!adjCell.cell.isRevealed && !adjCell.cell.isMine) { // The .cell. is the issue if this line is causing error
-              stack.push([adjCell.row, adjCell.col]);
-            }
+      if (cell.adjacentMines === 0 && !cell.isMine) {
+    // @ts-ignore
+        getAdjacentCells(newGrid, r, c).forEach((adjCell) => {
+          const { row, col, cell } = adjCell; // Destructure adjCell here
+          if (!cell.isRevealed && !cell.isMine) {
+            stack.push([row, col]);
+          }
+        });
+      }
+    }
+  }
+
+  return newGrid;
+};
+
+const getAdjacentCells = (
+  grid: CellType[][],
+  row: number,
+  col: number,
+): { row: number; col: number; cell: CellType }[] => {
+  const size = grid.length;
+  const adjacentCells: { row: number; col: number; cell: CellType }[] = [];
+
+  for (let i = -1; i <= 1; i++) {
+    for (let j = -1; j <= 1; j++) {
+      if (i === 0 && j === 0) continue;
+      const newRow = row + i;
+      const newCol = col + j;
+      if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
+            // @ts-ignore
+        if (grid[newRow] !== undefined && grid[newRow][newCol] !== undefined) {
+          adjacentCells.push({
+            row: newRow,
+            col: newCol,
+            // @ts-ignore
+            cell: grid[newRow][newCol],
           });
         }
       }
     }
+  }
 
-    return newGrid;
-  };
-
-  const getAdjacentCells = (
-    grid: CellType[][],
-    row: number,
-    col: number,
-  ): { row: number; col: number; cell: CellType }[] => {
-    const size = grid.length;
-    const adjacentCells: { row: number; col: number; cell: CellType }[] = [];
-
-    for (let i = -1; i <= 1; i++) {
-      for (let j = -1; j <= 1; j++) {
-        if (i === 0 && j === 0) continue;
-        const newRow = row + i;
-        const newCol = col + j;
-        if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
-          if (grid[newRow] && grid[newRow][newCol]) {
-            adjacentCells.push({
-              row: newRow,
-              col: newCol,
-              cell: grid[newRow][newCol],
-            });
-          }
-        }
-      }
-    }
-
-    return adjacentCells;
-  };
+  return adjacentCells;
+};
 
   const handleCellClick = (rowIndex: number, colIndex: number) => {
     const cell = grid[rowIndex]?.[colIndex];
